@@ -1,0 +1,6 @@
+streamlit
+pandas
+numpy
+PyPortfolioOpt
+matplotlib
+# Tambahkan library lain yang Anda gunakan
