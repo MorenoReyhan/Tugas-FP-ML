@@ -118,7 +118,7 @@ def plot_pie_chart(weights, title="Alokasi Portofolio Optimal (ARO)"):
 
     fig, ax = plt.subplots(figsize=(8, 6))
     ax.pie(sizes, explode=explode, labels=labels, autopct='%1.1f%%',
-           shadow=True, startangle=90)
+        shadow=True, startangle=90)
     ax.axis('equal')
     plt.title(title)
 
