@@ -1,6 +1,6 @@
 streamlit
 pandas
 numpy
-PyPortfolioOpt
+pypfopt
 matplotlib
 # Tambahkan library lain yang Anda gunakan
