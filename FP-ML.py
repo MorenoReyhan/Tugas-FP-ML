@@ -5,7 +5,7 @@ from pypfopt import risk_models, expected_returns
 import matplotlib.pyplot as plt
 import io
 
-# --- Functions from Code 2 (adapted for Streamlit) ---
+# --- Functions for Portfolio Optimization ---
 def calculate_sharpe_ratio(weights, mean_returns, cov_matrix, risk_free_rate):
     """Calculates the Sharpe ratio for a given set of weights."""
     port_return = np.sum(mean_returns * weights)
@@ -100,9 +100,8 @@ def aro_portfolio_optimization(df_prices, n_rabbits, n_iterations, alpha, risk_f
     
     return optimal_weights_dict, best_score, history
 
-# --- Functions from Code 1 (plot_pie_chart and main structure) ---
 def plot_pie_chart(weights, title="Alokasi Portofolio Optimal (ARO)"):
-    """Fungsi untuk membuat dan menampilkan pie chart alokasi portofolio."""
+    """Function to create and display a pie chart of portfolio allocation."""
     if not weights or all(value == 0 for value in weights.values()):
         st.warning("Tidak ada alokasi untuk ditampilkan dalam pie chart (semua bobot nol).")
         return
@@ -118,7 +117,7 @@ def plot_pie_chart(weights, title="Alokasi Portofolio Optimal (ARO)"):
 
     fig, ax = plt.subplots(figsize=(8, 6))
     ax.pie(sizes, explode=explode, labels=labels, autopct='%1.1f%%',
-        shadow=True, startangle=90)
+           shadow=True, startangle=90)
     ax.axis('equal')
     plt.title(title)
 
@@ -146,10 +145,8 @@ def main():
     if "sharpe_history" not in st.session_state:
         st.session_state.sharpe_history = []
 
-    # Default parameters based on N (number of assets)
-    default_n_rabbits = 20
-    default_n_iterations = 100
-    default_alpha = 0.2
+    # Fixed risk-free rate
+    risk_free_rate = 0.0575  # Annual Risk-Free Rate
 
     if choice == "Home":
         st.write("""
@@ -232,34 +229,30 @@ def main():
             st.info("Menunggu Anda mengunggah file CSV...")
 
         if st.session_state.data_df is not None:
-            # Determine N and set default parameters based on code 2 rules
+            # Determine N and set parameters based on code 2 rules
             N = len(st.session_state.data_df.columns)
             if N < 10:
-                default_n_rabbits = 20
-                default_n_iterations = 100
-                default_alpha = 0.2
+                n_rabbits = 20
+                n_iterations = 100
+                alpha = 0.2
             elif 10 <= N <= 19:
-                default_n_rabbits = 20
-                default_n_iterations = 500
-                default_alpha = 0.1
-            else: # N > 20
-                default_n_rabbits = 100
-                default_n_iterations = 1000
-                default_alpha = 0.05
+                n_rabbits = 20
+                n_iterations = 500
+                alpha = 0.1
+            else: # N >= 20
+                n_rabbits = 100
+                n_iterations = 1000
+                alpha = 0.05
 
             st.markdown("---")
             st.header("🚀 Analisis Portofolio (ARO Heuristik)")
 
-            st.subheader(f"Parameter Optimasi ARO (Default berdasarkan {N} aset)")
-            col1, col2, col3, col4 = st.columns(4)
-            with col1:
-                n_rabbits = st.number_input("Jumlah Agen (Rabbits)", min_value=5, max_value=200, value=default_n_rabbits, step=1)
-            with col2:
-                n_iterations = st.number_input("Jumlah Iterasi", min_value=10, max_value=2000, value=default_n_iterations, step=10)
-            with col3:
-                alpha = st.slider("Faktor Pergerakan (Alpha)", min_value=0.01, max_value=1.0, value=default_alpha, step=0.01, format="%.2f")
-            with col4:
-                risk_free_rate = st.number_input("Risk-Free Rate (Tahunan)", min_value=0.0, max_value=0.2, value=0.0575, step=0.0025, format="%.4f")
+            st.info(f"Parameter optimasi secara otomatis diatur berdasarkan **{N} aset** yang terdeteksi:")
+            st.markdown(f"- **Jumlah Agen (Rabbits):** {n_rabbits}")
+            st.markdown(f"- **Jumlah Iterasi:** {n_iterations}")
+            st.markdown(f"- **Faktor Pergerakan (Alpha):** {alpha:.2f}")
+            st.markdown(f"- **Risk-Free Rate (Tahunan):** {risk_free_rate*100:.2f}%")
+
 
             st.subheader("Tentang Metode ARO (Heuristik)")
             st.markdown("""
